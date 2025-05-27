@@ -1,0 +1,79 @@
+/* إعدادات عامة */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f5f5;
+}
+
+/* الرأس */
+header {
+    margin-bottom: 30px;
+}
+
+header h1 {
+    color: #2c3e50;
+}
+
+.current-time {
+    font-size: 1.1rem;
+    color: #7f8c8d;
+}
+
+/* بطاقات الأجهزة */
+.device-card {
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+
+.device-card.inactive {
+    opacity: 0.7;
+}
+
+.device-card .card-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.device-info {
+    margin-bottom: 15px;
+}
+
+.device-schedules {
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.schedule-item {
+    background-color: #e9ecef;
+    padding: 5px 10px;
+    border-radius: 15px;
+    margin: 5px;
+    display: inline-block;
+    font-size: 0.9rem;
+}
+
+/* أزرار التحكم */
+.control-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+/* السجلات */
+.table-responsive {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+/* تخصيص للهواتف */
+@media (max-width: 768px ) {
+    .control-buttons {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .control-buttons .btn {
+        margin-bottom: 5px;
+    }
+}

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام التحكم بالأجراس</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="my-4">
+            <h1 class="text-center">نظام التحكم بالأجراس</h1>
+            <div class="current-time text-center mb-3">
+                <span id="current-date"></span>
+                <span id="current-time"></span>
+            </div>
+        </header>
+
+        <main>
+            <!-- قسم الأجهزة -->
+            <section class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h2 class="mb-0">الأجهزة</h2>
+                    <button id="add-device-btn" class="btn btn-primary">إضافة جهاز جديد</button>
+                </div>
+                <div class="card-body">
+                    <div id="devices-container" class="row">
+                        <!-- سيتم إضافة الأجهزة هنا ديناميكياً -->
+                        <div class="col-12 text-center" id="no-devices-message">
+                            <p>لا توجد أجهزة مضافة. قم بإضافة جهاز جديد باستخدام الزر أعلاه.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- قسم ضبط الوقت -->
+            <section class="card mb-4">
+                <div class="card-header">
+                    <h2 class="mb-0">ضبط الوقت</h2>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="set-date" class="form-label">التاريخ:</label>
+                            <input type="date" id="set-date" class="form-control">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="set-time" class="form-label">الوقت:</label>
+                            <input type="time" id="set-time" class="form-control">
+                        </div>
+                        <div class="col-md-4 mb-3 d-flex align-items-end">
+                            <button id="set-time-btn" class="btn btn-primary w-100">ضبط الوقت</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- قسم السجلات -->
+            <section class="card mb-4">
+                <div class="card-header">
+                    <h2 class="mb-0">سجلات التشغيل</h2>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>التاريخ والوقت</th>
+                                    <th>الجهاز</th>
+                                    <th>نوع الحدث</th>
+                                    <th>المدة (ثانية )</th>
+                                    <th>الحالة</th>
+                                </tr>
+                            </thead>
+                            <tbody id="logs-container">
+                                <!-- سيتم إضافة السجلات هنا ديناميكياً -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="no-logs-message" class="text-center">
+                        <p>لا توجد سجلات حتى الآن.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- نموذج إضافة/تعديل جهاز -->
+    <div class="modal fade" id="device-modal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modal-title">إضافة جهاز جديد</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="device-form">
+                        <input type="hidden" id="device-uuid">
+                        <div class="mb-3">
+                            <label for="device-id" class="form-label">معرف الجهاز:</label>
+                            <input type="text" class="form-control" id="device-id" required>
+                            <div class="form-text">معرف فريد للجهاز (مثلاً: esp32_bell_001)</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="device-name" class="form-label">اسم الجهاز:</label>
+                            <input type="text" class="form-control" id="device-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="device-location" class="form-label">الموقع:</label>
+                            <input type="text" class="form-control" id="device-location">
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="device-active" checked>
+                            <label class="form-check-label" for="device-active">تفعيل الجهاز</label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-primary" id="save-device-btn">حفظ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نموذج إضافة/تعديل جدول تشغيل -->
+    <div class="modal fade" id="schedule-modal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="schedule-modal-title">إضافة جدول تشغيل جديد</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="schedule-form">
+                        <input type="hidden" id="schedule-id">
+                        <input type="hidden" id="schedule-device-id">
+                        <div class="mb-3">
+                            <label class="form-label">يوم التشغيل:</label>
+                            <select class="form-select" id="day-of-week" required>
+                                <option value="0">الأحد</option>
+                                <option value="1">الاثنين</option>
+                                <option value="2">الثلاثاء</option>
+                                <option value="3">الأربعاء</option>
+                                <option value="4">الخميس</option>
+                                <option value="5">الجمعة</option>
+                                <option value="6">السبت</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="schedule-time" class="form-label">وقت التشغيل:</label>
+                            <input type="time" class="form-control" id="schedule-time" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="schedule-duration" class="form-label">مدة التشغيل (بالثواني):</label>
+                            <input type="number" class="form-control" id="schedule-duration" min="1" max="300" value="5" required>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="schedule-active" checked>
+                            <label class="form-check-label" for="schedule-active">تفعيل الجدول</label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-primary" id="save-schedule-btn">حفظ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نموذج تأكيد الحذف -->
+    <div class="modal fade" id="confirm-modal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">تأكيد الحذف</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="confirm-message">هل أنت متأكد من رغبتك في الحذف؟</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-danger" id="confirm-delete-btn">حذف</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- إشعارات -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="notification-toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto" id="notification-title">إشعار</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="notification-message">
+                تم تنفيذ العملية بنجاح.
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
